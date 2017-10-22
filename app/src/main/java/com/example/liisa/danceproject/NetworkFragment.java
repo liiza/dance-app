@@ -1,11 +1,11 @@
 package com.example.liisa.danceproject;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
@@ -46,7 +46,15 @@ public class NetworkFragment extends Fragment {
     }
 
     public void sendSpeedToServer(URL url, float[] speed) throws IOException {
-        NetworkCallTask mDownloadTask = new NetworkCallTask(speed);
-        mDownloadTask.execute(url.toString());
+        NetworkCallTask networkCallTask = new NetworkCallTask();
+        String json = String.format("{\"%s\": %f, \"%s\": %f, \"%s\": %f }", "x", speed[0], "y", speed[1], "z", speed[2]);
+        networkCallTask.execute(url.toString(), json);
     }
+
+    public void createDance(URL url, String name, NetworkCallBack callBack) throws IOException {
+        NetworkCallTask networkCallTask = new NetworkCallTask(callBack);
+        String json = String.format("{\"%s\": \"%s\"}", "name", name);
+        networkCallTask.execute(url.toString(), json);
+    }
+
 }

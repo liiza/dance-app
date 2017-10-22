@@ -1,13 +1,15 @@
 package com.example.liisa.danceproject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.widget.Button;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -26,13 +28,22 @@ public class MainActivity extends FragmentActivity implements SensorEventListene
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        Button createWorkoutButton = findViewById(R.id.create_workout);
+        createWorkoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchActivity();
+            }
+        });
+
         try {
             serverUrl = new URL(SERVER_URL);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
 
-        setContentView(R.layout.activity_main);
         SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
         if (sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION) != null) {
@@ -45,6 +56,11 @@ public class MainActivity extends FragmentActivity implements SensorEventListene
             // fai! we dont have an accelerometer!
         }
 
+    }
+
+    private void launchActivity() {
+        Intent intent = new Intent(this, RecordWorkoutActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -61,10 +77,6 @@ public class MainActivity extends FragmentActivity implements SensorEventListene
         linear_acceleration[0] = event.values[0];
         linear_acceleration[1] = event.values[1];
         linear_acceleration[2] = event.values[2];
-
-        /*System.out.println(String.format("\"{'%s': %f, '%s': %f, '%s': %f }\"",
-                "x", linear_acceleration[0], "y", linear_acceleration[1], "z", linear_acceleration[2]));
-        System.out.println("Diff in seconds " + diffInSeconds);*/
 
         speed[0] = (linear_acceleration[0] * diffInSeconds) + speed[0];
         speed[1] = (linear_acceleration[1] * diffInSeconds) + speed[1];
