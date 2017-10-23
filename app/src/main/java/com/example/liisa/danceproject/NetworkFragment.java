@@ -51,6 +51,13 @@ public class NetworkFragment extends Fragment {
         networkCallTask.execute(url.toString(), json);
     }
 
+    public void addRecordToDance(URL url, float[] speed, Integer dance, long time) throws IOException {
+        NetworkCallTask networkCallTask = new NetworkCallTask();
+        String json = String.format("{\"%s\": %f, \"%s\": %f, \"%s\": %f, \"dance\": %d, \"time\": %d }",
+                "x", speed[0], "y", speed[1], "z", speed[2], dance, time);
+        networkCallTask.execute(url.toString(), json);
+    }
+
     public void createDance(URL url, String name, NetworkCallBack callBack) throws IOException {
         NetworkCallTask networkCallTask = new NetworkCallTask(callBack);
         String json = String.format("{\"%s\": \"%s\"}", "name", name);
