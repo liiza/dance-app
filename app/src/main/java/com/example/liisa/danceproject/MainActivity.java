@@ -17,12 +17,25 @@ public class MainActivity extends FragmentActivity {
         createWorkoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                launchActivity();
+                launchRecordActivity();
+            }
+        });
+
+        Button selectWorkoutButton = findViewById(R.id.select_workout);
+        selectWorkoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchSelectWorkoutActivity();
             }
         });
     }
 
-    private void launchActivity() {
+    private void launchRecordActivity() {
+        Intent intent = new Intent(this, RecordWorkoutActivity.class);
+        startActivity(intent);
+    }
+
+    private void launchSelectWorkoutActivity() {
         Intent intent = new Intent(this, RecordWorkoutActivity.class);
         startActivity(intent);
     }

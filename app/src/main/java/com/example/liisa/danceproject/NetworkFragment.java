@@ -63,5 +63,8 @@ public class NetworkFragment extends Fragment {
         String json = String.format("{\"%s\": \"%s\"}", "name", name);
         networkCallTask.execute(url.toString(), json);
     }
-
+    public void listDances(URL url, NetworkCallBack callBack) throws IOException {
+        NetworkCallTask networkCallTask = new NetworkCallTask(callBack);
+        networkCallTask.execute(url.toString());
+    }
 }

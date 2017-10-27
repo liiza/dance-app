@@ -42,8 +42,53 @@ class NetworkCallTask extends AsyncTask<String, Void, NetworkCallTask.Result> {
 
     @Override
     protected NetworkCallTask.Result doInBackground(String... strings) {
-        String url = strings[0];
-        String json = strings[1];
+        if (strings.length == 2) {
+            String url = strings[0];
+            String json = strings[1];
+            return this.doPost(url, json);
+        } else {
+            return this.doGet(strings[0]);
+        }
+    }
+
+    private NetworkCallTask.Result doGet(String url) {
+        HttpURLConnection urlConnection;
+        try {
+            urlConnection = (HttpURLConnection) new URL(url).openConnection();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new Result(e);
+        }
+        try {
+            urlConnection.setDoOutput(true);
+            urlConnection.setRequestProperty("Accept", "application/json");
+            urlConnection.setRequestMethod("GET");
+            OutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+            writer.flush();
+            writer.close();
+            out.close();
+            int responseCode = urlConnection.getResponseCode();
+            if (responseCode != HttpsURLConnection.HTTP_OK) {
+                throw new IOException("HTTP error code: " + responseCode);
+            }
+            InputStream stream = urlConnection.getInputStream();
+            if (stream != null) {
+                // Converts Stream to String with max length of 500.
+                String result = readStream(stream, 500);
+                return new Result(result);
+            }
+            return new Result("ok");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new Result(e);
+        } finally {
+            urlConnection.disconnect();
+        }
+    }
+
+    private NetworkCallTask.Result doPost(String url, String json) {
         System.out.println(json);
         HttpURLConnection urlConnection;
         try {

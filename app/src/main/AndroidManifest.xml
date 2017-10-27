@@ -21,6 +21,10 @@
         <activity
             android:name=".RecordWorkoutActivity"
             android:label="@string/title_activity_record_workout"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".SelectWorkOut"
+            android:label="@string/title_activity_select_work_out"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

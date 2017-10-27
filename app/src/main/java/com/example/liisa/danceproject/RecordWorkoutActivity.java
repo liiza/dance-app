@@ -10,7 +10,6 @@ import android.support.v4.app.FragmentActivity;
 import android.widget.TextView;
 import android.os.SystemClock;
 
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,6 +22,9 @@ public class RecordWorkoutActivity extends FragmentActivity implements SensorEve
     private static String SERVER_URL = "https://sleepy-basin-85659.herokuapp.com/backend/dance";
     private NetworkFragment mNetworkFragment;
     private URL serverUrl;
+
+    private SensorManager sensorManager;
+
     private boolean error = false;
     private Integer dance = null;
     private float[] speed = {0.0f, 0.0f, 0.0f};
@@ -47,19 +49,22 @@ public class RecordWorkoutActivity extends FragmentActivity implements SensorEve
             e.printStackTrace();
         }
 
-        SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
         if (sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION) != null) {
             // success! we have an accelerometer
             Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
             sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-
-            mNetworkFragment = NetworkFragment.getInstance(getSupportFragmentManager());
         } else {
             // fai! we dont have an accelerometer!
         }
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        sensorManager.unregisterListener(this);
+    }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -100,7 +105,6 @@ public class RecordWorkoutActivity extends FragmentActivity implements SensorEve
 
     @Override
     public void onCallBack(NetworkCallTask.Result result) {
-        System.out.println("network call back");
         if (result.mResultValue != null) {
             this.error = false;
             System.out.println(result.mResultValue);
