@@ -36,7 +36,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void launchSelectWorkoutActivity() {
-        Intent intent = new Intent(this, RecordWorkoutActivity.class);
+        Intent intent = new Intent(this, SelectWorkOut.class);
         startActivity(intent);
     }
 }

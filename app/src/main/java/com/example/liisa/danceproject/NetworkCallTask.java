@@ -20,6 +20,7 @@ import javax.net.ssl.HttpsURLConnection;
 class NetworkCallTask extends AsyncTask<String, Void, NetworkCallTask.Result> {
 
     private final NetworkCallBack callBack;
+    private final int maxReadSize = 5000;
 
     public NetworkCallTask() {
         callBack = null;
@@ -52,6 +53,7 @@ class NetworkCallTask extends AsyncTask<String, Void, NetworkCallTask.Result> {
     }
 
     private NetworkCallTask.Result doGet(String url) {
+        System.out.println("getting url " + url);
         HttpURLConnection urlConnection;
         try {
             urlConnection = (HttpURLConnection) new URL(url).openConnection();
@@ -60,22 +62,16 @@ class NetworkCallTask extends AsyncTask<String, Void, NetworkCallTask.Result> {
             return new Result(e);
         }
         try {
-            urlConnection.setDoOutput(true);
+            urlConnection.setDoOutput(false);
             urlConnection.setRequestProperty("Accept", "application/json");
             urlConnection.setRequestMethod("GET");
-            OutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
-            writer.flush();
-            writer.close();
-            out.close();
             int responseCode = urlConnection.getResponseCode();
             if (responseCode != HttpsURLConnection.HTTP_OK) {
                 throw new IOException("HTTP error code: " + responseCode);
             }
             InputStream stream = urlConnection.getInputStream();
             if (stream != null) {
-                // Converts Stream to String with max length of 500.
-                String result = readStream(stream, 500);
+                String result = readStream(stream, maxReadSize);
                 return new Result(result);
             }
             return new Result("ok");
@@ -115,7 +111,7 @@ class NetworkCallTask extends AsyncTask<String, Void, NetworkCallTask.Result> {
             InputStream stream = urlConnection.getInputStream();
             if (stream != null) {
                 // Converts Stream to String with max length of 500.
-                String result = readStream(stream, 500);
+                String result = readStream(stream, maxReadSize);
                 return new Result(result);
             }
             return new Result("ok");

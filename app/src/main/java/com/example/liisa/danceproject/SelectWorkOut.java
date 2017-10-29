@@ -14,7 +14,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SelectWorkOut extends FragmentActivity implements NetworkCallBack{
+public class SelectWorkOut extends FragmentActivity implements NetworkCallBack {
 
     private SimpleAdapter adpt;
     private NetworkFragment mNetworkFragment;
@@ -22,6 +22,7 @@ public class SelectWorkOut extends FragmentActivity implements NetworkCallBack{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_select_work_out);
 
         adpt  = new SimpleAdapter(new ArrayList<Dance>(), this);
         ListView lView = (ListView) findViewById(R.id.listview);
@@ -45,7 +46,9 @@ public class SelectWorkOut extends FragmentActivity implements NetworkCallBack{
                 JSONObject object = jsonArray.getJSONObject(i);
                 dances.add(new Dance(object.getInt("pk"), object.getString("name")));
             }
+            System.out.println("we are setting them dances " + dances.size());
             this.adpt.setItemList(dances);
+            this.adpt.notifyDataSetChanged();
         } catch (JSONException e) {
             e.printStackTrace();
         }
