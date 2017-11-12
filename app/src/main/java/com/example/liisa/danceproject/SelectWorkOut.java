@@ -1,8 +1,11 @@
 package com.example.liisa.danceproject;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import org.json.JSONArray;
@@ -23,13 +26,20 @@ public class SelectWorkOut extends FragmentActivity implements NetworkCallBack {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_work_out);
-
-        adpt  = new SimpleAdapter(new ArrayList<Dance>(), this);
-        ListView lView = (ListView) findViewById(R.id.listview);
-
-        lView.setAdapter(adpt);
-
         mNetworkFragment = NetworkFragment.getInstance(getSupportFragmentManager());
+
+        adpt = new SimpleAdapter(new ArrayList<Dance>(), this);
+        final ListView lView = findViewById(R.id.listview);
+        lView.setAdapter(adpt);
+        AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int index, long arg3) {
+                Dance o = (Dance) lView.getItemAtPosition(index);
+                startWorkOutActivity(o);
+            }
+        };
+        lView.setOnItemClickListener(listener);
+
         try {
             mNetworkFragment.listDances(new URL("https://sleepy-basin-85659.herokuapp.com/backend/dance"), this);
         } catch (IOException e) {
@@ -46,11 +56,17 @@ public class SelectWorkOut extends FragmentActivity implements NetworkCallBack {
                 JSONObject object = jsonArray.getJSONObject(i);
                 dances.add(new Dance(object.getInt("pk"), object.getString("name")));
             }
-            System.out.println("we are setting them dances " + dances.size());
             this.adpt.setItemList(dances);
             this.adpt.notifyDataSetChanged();
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private void startWorkOutActivity(Dance dance) {
+        Intent intent = new Intent(this, Workout.class);
+        intent.putExtra("pk", "" + dance.pk);
+        intent.putExtra("name", "" + dance.name);
+        startActivity(intent);
     }
 }

@@ -5,4 +5,5 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_record_workout">RecordWorkoutActivity</string>
     <string name="title_activity_select_work_out">SelectWorkOut</string>
+    <string name="title_activity_workout">workout</string>
 </resources>

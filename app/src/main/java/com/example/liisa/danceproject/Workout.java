@@ -6,52 +6,51 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v4.app.FragmentActivity;
 import android.widget.TextView;
-import android.os.SystemClock;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import static com.example.liisa.danceproject.Utils.milliToNanoSeconds;
 import static com.example.liisa.danceproject.Utils.nanoToMilliSeconds;
 import static com.example.liisa.danceproject.Utils.nanoToSeconds;
 
-public class RecordWorkoutActivity extends FragmentActivity implements SensorEventListener, NetworkCallBack {
+public class Workout extends FragmentActivity implements NetworkCallBack, SensorEventListener {
 
-    private static String SERVER_URL = "https://sleepy-basin-85659.herokuapp.com/backend/dance";
+    private String pk;
+    private String name;
     private NetworkFragment mNetworkFragment;
-    private URL serverUrl;
-
-    private SensorManager sensorManager;
-
-    private boolean error = false;
-    private Integer dance = null;
-    private float[] speed = {0.0f, 0.0f, 0.0f};
-    // The uptime of the system in nanoseconds at when the event happened
     private long latestEventTimeStamp;
+    private float[] speed = {0.0f, 0.0f, 0.0f};
     private long startime;
-
+    private SensorManager sensorManager;
+    private float diffX = 0.0f;
+    private float diffY = 0.0f;
+    private float diffZ = 0.0f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_record_workout);
-        try {
-            serverUrl = new URL(SERVER_URL);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+        setContentView(R.layout.activity_workout);
+
+        this.pk = getIntent().getStringExtra("pk");
+        TextView tv1 = findViewById(R.id.workout_pk);
+        tv1.setText(this.pk);
+
+        this.name = getIntent().getStringExtra("name");
+        TextView tv2 = findViewById(R.id.workout_name);
+        tv2.setText(this.name);
+
         mNetworkFragment = NetworkFragment.getInstance(getSupportFragmentManager());
-        try {
-            mNetworkFragment.createDance(serverUrl, "TestDance", this);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+
+        this.startime = milliToNanoSeconds(SystemClock.uptimeMillis());
+        this.latestEventTimeStamp = this.startime;
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
@@ -65,17 +64,33 @@ public class RecordWorkoutActivity extends FragmentActivity implements SensorEve
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        sensorManager.unregisterListener(this);
+    public void onCallBack(NetworkCallTask.Result result) {
+        if (result.mResultValue != null) {
+            System.out.println(result.mResultValue);
+            try {
+                JSONObject jObject = new JSONObject(result.mResultValue);
+                boolean ended = jObject.getBoolean("ended");
+                if (ended) {
+                    this.name = getIntent().getStringExtra("name");
+                    TextView tv2 = findViewById(R.id.workout_name);
+                    String diff = String.format("%f, %f, %f", diffX, diffY, diffZ);
+                    tv2.setText(diff);
+                    return;
+                }
+                diffX += Float.valueOf(jObject.getString("diff_x"));
+                diffY += Float.valueOf(jObject.getString("diff_y"));
+                diffZ += Float.valueOf(jObject.getString("diff_z"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println(result.mException);
+        }
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (dance == null) {
-            System.out.println("Dance is null");
-            return;
-        }
+
         // Let's sample the acceleration only about twice per second
         float minTimeBetweenSamples = 0.5f;
         long diffInNanoSeconds = event.timestamp - latestEventTimeStamp;
@@ -92,46 +107,28 @@ public class RecordWorkoutActivity extends FragmentActivity implements SensorEve
         speed[0] = (linear_acceleration[0] * diffInSeconds) + speed[0];
         speed[1] = (linear_acceleration[1] * diffInSeconds) + speed[1];
         speed[2] = (linear_acceleration[2] * diffInSeconds) + speed[2];
+        sendMovement(speed, nanoToMilliSeconds(event.timestamp - this.startime));
+    }
+
+    public void sendMovement(float[] speed, long time) {
         try {
-            mNetworkFragment.addRecordToDance(
-                speed,
-                dance,
-                nanoToMilliSeconds(event.timestamp - this.startime));
+            mNetworkFragment.sendMovement(
+                    new URL("https://sleepy-basin-85659.herokuapp.com/backend/evaluate"),
+                    speed, time, Integer.parseInt(this.pk),
+                    this);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void onAccuracyChanged(Sensor sensor, int i) {
-
+    protected void onStop() {
+        super.onStop();
+        sensorManager.unregisterListener(this);
     }
 
     @Override
-    public void onCallBack(NetworkCallTask.Result result) {
-        if (result.mResultValue != null) {
-            this.error = false;
-            System.out.println(result.mResultValue);
-            try {
-                JSONObject jObject = new JSONObject(result.mResultValue);
-                this.startime = milliToNanoSeconds(SystemClock.uptimeMillis());
-                this.latestEventTimeStamp = this.startime;
-                this.dance = jObject.getInt("pk");
-            } catch (JSONException e) {
-                this.error = true;
-                e.printStackTrace();
-            }
-        } else if (result.mException != null) {
-            this.error = true;
-            System.out.println(result.mException);
-        }
+    public void onAccuracyChanged(Sensor sensor, int i) {
 
-        TextView tv1 = findViewById(R.id.status_text);
-
-        if (this.error) {
-            tv1.setText("Something went wrong");
-        } else {
-            tv1.setText("Recording started");
-        }
     }
 }
