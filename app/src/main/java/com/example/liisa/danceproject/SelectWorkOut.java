@@ -13,7 +13,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +40,7 @@ public class SelectWorkOut extends FragmentActivity implements NetworkCallBack {
         lView.setOnItemClickListener(listener);
 
         try {
-            mNetworkFragment.listDances(new URL("https://sleepy-basin-85659.herokuapp.com/backend/dance"), this);
+            mNetworkFragment.listDances(this);
         } catch (IOException e) {
             e.printStackTrace();
         }

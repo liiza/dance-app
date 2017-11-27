@@ -113,9 +113,7 @@ public class Workout extends FragmentActivity implements NetworkCallBack, Sensor
     public void sendMovement(float[] speed, long time) {
         try {
             mNetworkFragment.sendMovement(
-                    new URL("https://sleepy-basin-85659.herokuapp.com/backend/evaluate"),
-                    speed, time, Integer.parseInt(this.pk),
-                    this);
+                    speed, time, Integer.parseInt(this.pk), this);
         } catch (IOException e) {
             e.printStackTrace();
         }

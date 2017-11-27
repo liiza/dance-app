@@ -6,15 +6,14 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v4.app.FragmentActivity;
 import android.widget.TextView;
-import android.os.SystemClock;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import static com.example.liisa.danceproject.Utils.milliToNanoSeconds;
@@ -23,10 +22,8 @@ import static com.example.liisa.danceproject.Utils.nanoToSeconds;
 
 public class RecordWorkoutActivity extends FragmentActivity implements SensorEventListener, NetworkCallBack {
 
-    private static String SERVER_URL = "https://sleepy-basin-85659.herokuapp.com/backend/dance";
     private NetworkFragment mNetworkFragment;
     private URL serverUrl;
-
     private SensorManager sensorManager;
 
     private boolean error = false;
@@ -41,14 +38,9 @@ public class RecordWorkoutActivity extends FragmentActivity implements SensorEve
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record_workout);
-        try {
-            serverUrl = new URL(SERVER_URL);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
         mNetworkFragment = NetworkFragment.getInstance(getSupportFragmentManager());
         try {
-            mNetworkFragment.createDance(serverUrl, "TestDance", this);
+            mNetworkFragment.createDance("TestDance", this);
         } catch (IOException e) {
             e.printStackTrace();
         }
