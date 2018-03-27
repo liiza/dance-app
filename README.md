@@ -23,5 +23,6 @@ Once finished, you can replay the excersice or dance along with some other excer
 ![screenshot3](https://github.com/liiza/dance-app/blob/master/app/src/main/java/com/example/liisa/screenshots/Screen%20Shot%202017-11-26%20at%208.15.40%20PM.png)
 
 At the end you will get your score:
+
 ![screensho4](https://github.com/liiza/dance-app/blob/master/app/src/main/java/com/example/liisa/screenshots/Screen%20Shot%202017-11-26%20at%208.15.57%20PM.png)
 
