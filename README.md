@@ -7,7 +7,7 @@ The app makes the phone work like Wii -console. Users can record new exercises b
 Once the exercise has been recorded, anyone in the community can dance along with the exercise and will get feedback on how closely their movements matched the original recording. 
 
 This app is still super rough, but POC shows the concept works and I loved to find time to finish this.
-I implemented this with Java just because that was something I was familiar with and I wanted to go with native app implementation as the accelerators were in a critical role in the app. However, I'd love to rewrite this with React Native. The backend implementation can be found here https://github.com/liiza/dance-app-backend
+I implemented this with Java just because that was something I was familiar with and I wanted to go with native app implementation as the motion sensors were in a critical role in the app. However, I'd love to rewrite this with React Native. The backend implementation can be found here https://github.com/liiza/dance-app-backend
 
 
 To create a new excercise select "Create workout"
