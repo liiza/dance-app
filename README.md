@@ -18,7 +18,8 @@ Start recording. Hold the phone in your hand to record the movements.
 
 ![screenshot2](https://github.com/liiza/dance-app/blob/master/app/src/main/java/com/example/liisa/screenshots/Screen%20Shot%202017-11-26%20at%208.16.10%20PM.png "Start recording")
 
-Once finished, you can replay the excersice or dance along with some other excersice.
+Once finished, you can replay the exersice or dance along with some other exersice.
+Choose the exersice from the list and dance along. (You will also need the link to the original music video.)
 
 ![screenshot3](https://github.com/liiza/dance-app/blob/master/app/src/main/java/com/example/liisa/screenshots/Screen%20Shot%202017-11-26%20at%208.15.40%20PM.png)
 
